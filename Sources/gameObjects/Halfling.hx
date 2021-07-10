@@ -65,7 +65,6 @@ class Halfling extends Entity{
 
     public function onButtonChange(id:Int, value:Float) {
 		if (id == XboxJoystick.LEFT_DPAD) {
-            Console.log("Izquierda");
 			if (value == 1) {
 				collision.accelerationX = -maxSpeed * 4;
 				display.scaleX = -Math.abs(display.scaleX);
@@ -76,7 +75,6 @@ class Halfling extends Entity{
 			}
 		}
 		if (id == XboxJoystick.RIGHT_DPAD) {
-            Console.log("Derecha");
 			if (value == 1) {
 				collision.accelerationX = maxSpeed * 4;
 				display.scaleX = Math.abs(display.scaleX);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.0" orientation="orthogonal" renderorder="right-down" width="53" height="23" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="3">
+<map version="1.5" tiledversion="1.7.0" orientation="orthogonal" renderorder="right-down" width="53" height="23" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="7">
  <tileset firstgid="1" name="tiles1" tilewidth="32" tileheight="32" tilecount="270" columns="18">
   <image source="tiles1.png" width="586" height="480"/>
  </tileset>
@@ -120,4 +120,11 @@
 231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231,232,231
 </data>
  </layer>
+ <objectgroup id="8" name="objetos">
+  <properties>
+   <property name="noCollision" type="int" value="0"/>
+  </properties>
+  <object id="3" name="startZone" x="4.828" y="581.773" width="95.3529" height="48.28"/>
+  <object id="4" name="winZone" x="1605.31" y="4.828" width="86.9039" height="628.846"/>
+ </objectgroup>
 </map>

@@ -1,5 +1,7 @@
 package states;
 
+import com.collision.platformer.CollisionBox;
+import js.html.Console;
 import gameObjects.Halfling;
 import helpers.Tray;
 import com.gEngine.display.extra.TileMapDisplay;
@@ -24,18 +26,21 @@ class GameState extends State {
 	var halfling:Halfling;
 	var simulationLayer:Layer;
 	var touchJoystick:VirtualGamepad;
-	var tray:helpers.Tray;
 	var mayonnaiseMap:TileMapDisplay;
+	var actualRoom:String; 
+	var winZone:CollisionBox;
 
-	public function new(room:String, fromRoom:String = null) {
-		super();
+	public function new(room:String = "1", fromRoom:String = null) {
+		super();		
+		this.actualRoom = room;
 	}
 
 	override function load(resources:Resources) {
-		resources.add(new DataLoader("pantalla1_tmx"));
+		Console.log("load");
+		resources.add(new DataLoader("pantalla"+actualRoom+"_tmx"));
 		var atlas = new JoinAtlas(2048, 2048);
 
-		atlas.add(new TilesheetLoader("tiles1", 32, 32, 0));
+		atlas.add(new TilesheetLoader("tiles"+actualRoom, 32, 32, 0));
 		atlas.add(new SpriteSheetLoader("halfling", 50, 37, 0, [
 			new Sequence("die", [62,62,64,65,66,67,68]),
 			new Sequence("jump", [15, 16, 17, 18 ]),
@@ -47,10 +52,11 @@ class GameState extends State {
 	}
 
 	override function init() {
+		Console.log("init");
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);
 
-		worldMap = new Tilemap("pantalla1_tmx", "tiles1");
+		worldMap = new Tilemap("pantalla"+actualRoom+"_tmx", "tiles"+actualRoom);
 		worldMap.init(function(layerTilemap, tileLayer) {
 			if (!tileLayer.properties.exists("noCollision")) {
 				layerTilemap.createCollisions(tileLayer);
@@ -59,10 +65,6 @@ class GameState extends State {
 			 mayonnaiseMap = layerTilemap.createDisplay(tileLayer);
 			 simulationLayer.addChild(mayonnaiseMap);
 		}, parseMapObjects);
-
-		 tray = new Tray(mayonnaiseMap);
-		halfling = new Halfling(250, 200, simulationLayer);
-		addChild(halfling);
 
 		stage.defaultCamera().limits(0, 0, worldMap.widthIntTiles * 32 * 1, worldMap.heightInTiles * 32 * 1);
 
@@ -83,7 +85,25 @@ class GameState extends State {
 		gamepad.notify(halfling.onAxisChange, halfling.onButtonChange);
 	}
 
-	function parseMapObjects(layerTilemap:Tilemap, object:TmxObject) {}
+	function parseMapObjects(layerTilemap:Tilemap, object:TmxObject) {
+		if(compareName(object, "startZone")){
+			if(halfling==null){
+				halfling = new Halfling(object.x, object.y, simulationLayer);
+				addChild(halfling);
+			}
+		}else 
+		if(compareName(object, "winZone")){
+			winZone = new CollisionBox();
+			winZone.x = object.x;
+			winZone.y = object.y;
+			winZone.width = object.width;
+			winZone.height = object.height;
+		}
+	}
+
+	inline function compareName(object:TmxObject, name:String){
+		return object.name.toLowerCase() == name.toLowerCase();
+	}
 
 	override function update(dt:Float) {
 		super.update(dt);
@@ -92,6 +112,25 @@ class GameState extends State {
 
 		CollisionEngine.collide(halfling.collision,worldMap.collision);
 
+		if(CollisionEngine.overlap(halfling.collision, winZone)){
+			changeState(new GameState(getNextRoom(),actualRoom));
+		}
+
+	}
+
+	inline function getNextRoom(){
+		if(actualRoom=="menu"){
+			return "1";
+		}else 
+		if(actualRoom=="1"){
+			return "2";
+		}else
+		if(actualRoom=="2"){
+			return "3";
+		}else
+		{
+			return "menu";
+		}
 	}
 
 	#if DEBUGDRAW
