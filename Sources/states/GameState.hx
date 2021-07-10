@@ -1,8 +1,8 @@
 package states;
 
+import gameObjects.Halfling;
 import helpers.Tray;
 import com.gEngine.display.extra.TileMapDisplay;
-import com.collision.platformer.Sides;
 import com.framework.utils.XboxJoystick;
 import com.framework.utils.VirtualGamepad;
 import format.tmx.Data.TmxObject;
@@ -21,7 +21,7 @@ import com.framework.utils.State;
 
 class GameState extends State {
 	var worldMap:Tilemap;
-	var chivito:ChivitoBoy;
+	var halfling:Halfling;
 	var simulationLayer:Layer;
 	var touchJoystick:VirtualGamepad;
 	var tray:helpers.Tray;
@@ -36,27 +36,17 @@ class GameState extends State {
 		var atlas = new JoinAtlas(2048, 2048);
 
 		atlas.add(new TilesheetLoader("tiles1", 32, 32, 0));
-		atlas.add(new SpriteSheetLoader("hero", 45, 60, 0, [
-			new Sequence("fall", [0]),
-			new Sequence("slide", [0]),
-			new Sequence("jump", [1]),
-			new Sequence("run", [2, 3, 4, 5, 6, 7, 8, 9]),
-			new Sequence("idle", [10]),
-			new Sequence("wallGrab", [11])
-		]));
-		atlas.add(new SpriteSheetLoader("adventurer", 50, 37, 0, [
-			new Sequence("fall", [0]),
-			new Sequence("slide", [0]),
-			new Sequence("jump", [15, 16, 17, 18, 19, 20, 21, 22, 23]),
+		atlas.add(new SpriteSheetLoader("halfling", 50, 37, 0, [
+			new Sequence("die", [62,62,64,65,66,67,68]),
+			new Sequence("jump", [15, 16, 17, 18 ]),
+			new Sequence("fall", [19, 20, 21, 22, 23]),
 			new Sequence("run", [8, 9, 10, 11, 12, 13]),
-			new Sequence("idle", [0, 1, 2, 3, 4]),
-			new Sequence("wallGrab", [11])
+			new Sequence("idle", [0, 1, 2, 3])
 		]));
 		resources.add(atlas);
 	}
 
 	override function init() {
-		stageColor(0.5, .5, 0.5);
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);
 
@@ -71,8 +61,8 @@ class GameState extends State {
 		}, parseMapObjects);
 
 		 tray = new Tray(mayonnaiseMap);
-		chivito = new ChivitoBoy(250, 200, simulationLayer);
-		addChild(chivito);
+		halfling = new Halfling(250, 200, simulationLayer);
+		addChild(halfling);
 
 		stage.defaultCamera().limits(0, 0, worldMap.widthIntTiles * 32 * 1, worldMap.heightInTiles * 32 * 1);
 
@@ -87,10 +77,10 @@ class GameState extends State {
 		touchJoystick.addKeyButton(XboxJoystick.A, KeyCode.Space);
 		touchJoystick.addKeyButton(XboxJoystick.X, KeyCode.X);
 		
-		touchJoystick.notify(chivito.onAxisChange, chivito.onButtonChange);
+		touchJoystick.notify(halfling.onAxisChange, halfling.onButtonChange);
 
 		var gamepad = Input.i.getGamepad(0);
-		gamepad.notify(chivito.onAxisChange, chivito.onButtonChange);
+		gamepad.notify(halfling.onAxisChange, halfling.onButtonChange);
 	}
 
 	function parseMapObjects(layerTilemap:Tilemap, object:TmxObject) {}
@@ -98,13 +88,10 @@ class GameState extends State {
 	override function update(dt:Float) {
 		super.update(dt);
 
-		stage.defaultCamera().setTarget(chivito.collision.x, chivito.collision.y);
+		stage.defaultCamera().setTarget(halfling.collision.x, halfling.collision.y);
 
-		CollisionEngine.collide(chivito.collision,worldMap.collision);
+		CollisionEngine.collide(halfling.collision,worldMap.collision);
 
-		tray.setContactPosition(chivito.collision.x + chivito.collision.width / 2, chivito.collision.y + chivito.collision.height + 1, Sides.BOTTOM);
-		tray.setContactPosition(chivito.collision.x + chivito.collision.width + 1, chivito.collision.y + chivito.collision.height / 2, Sides.RIGHT);
-		tray.setContactPosition(chivito.collision.x-1, chivito.collision.y+chivito.collision.height/2, Sides.LEFT);
 	}
 
 	#if DEBUGDRAW
