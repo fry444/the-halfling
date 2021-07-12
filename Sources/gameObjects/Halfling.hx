@@ -1,5 +1,7 @@
 package gameObjects;
 
+import haxe.Timer;
+import states.GlobalGameData;
 import js.html.Console;
 import com.framework.utils.XboxJoystick;
 import com.collision.platformer.Sides;
@@ -46,21 +48,21 @@ class Halfling extends Entity{
     override function render() {
 		var s = Math.abs(collision.velocityX / collision.maxVelocityX);
 		display.timeline.frameRate = (1 / 24) * s + (1 - s) * (1 / 10);
-		//if (collision.isTouching(Sides.BOTTOM) && collision.velocityX * collision.accelerationX < 0) {
-		//	display.timeline.playAnimation("slide");
-		//} else 
-        if (collision.isTouching(Sides.BOTTOM) && collision.velocityX == 0) {
-			display.timeline.playAnimation("idle");
-		} else if (collision.isTouching(Sides.BOTTOM) && collision.velocityX != 0) {
-			display.timeline.playAnimation("run");
-		} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY > 0) {
-			display.timeline.playAnimation("fall");
-		} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY < 0) {
-			display.timeline.playAnimation("jump");
-		}
+		if(!GlobalGameData.heroTakingDamage){
+			if (collision.isTouching(Sides.BOTTOM) && collision.velocityX == 0) {
+				display.timeline.playAnimation("idle");
+			} else if (collision.isTouching(Sides.BOTTOM) && collision.velocityX != 0) {
+				display.timeline.playAnimation("run");
+			} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY > 0) {
+				display.timeline.playAnimation("fall");
+			} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY < 0) {
+				display.timeline.playAnimation("jump");
+			}
+		}else{
+			display.timeline.playAnimation("die");	
+		}        
 		display.x = collision.x;
-		display.y = collision.y;
-		
+		display.y = collision.y;		
 	}
 
     public function onButtonChange(id:Int, value:Float) {
@@ -88,11 +90,20 @@ class Halfling extends Entity{
 			if (value == 1) {				
                 collision.velocityY = -1000;
 			}
-		}
-		
+		}		
 	}
 
     public function onAxisChange(id:Int, value:Float) {
 
+	}
+
+	public function damage():Void{
+        GlobalGameData.heroTakingDamage = true;
+		GlobalGameData.heroHealth--;
+		Timer.delay(stopDamage, 500);
+    }
+
+	function stopDamage() {
+		GlobalGameData.heroTakingDamage = false;
 	}
 }
