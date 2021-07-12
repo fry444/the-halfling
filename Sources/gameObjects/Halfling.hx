@@ -1,5 +1,6 @@
 package gameObjects;
 
+import com.collision.platformer.CollisionGroup;
 import haxe.Timer;
 import states.GlobalGameData;
 import js.html.Console;
@@ -13,7 +14,8 @@ import com.framework.utils.Entity;
 class Halfling extends Entity{
     public var display:Sprite;
     public var collision:CollisionBox;
-
+	public var attackCollision:CollisionBox;
+	public var rightDirection:Bool = true;
     var maxSpeed = 200;
 
     public function new(x:Float,y:Float,layer:Layer) {
@@ -22,6 +24,7 @@ class Halfling extends Entity{
 		display.smooth = false;
         layer.addChild(display);
 		collision = new CollisionBox();
+		
 		collision.width = display.width();
 		collision.height = display.height()*1.5;
 		display.pivotX=display.width()*0.5;
@@ -30,7 +33,6 @@ class Halfling extends Entity{
 		display.scaleX = display.scaleY = 2;
 		collision.x=x;
 		collision.y=y;
-
 		collision.userData = this;
 
 		collision.accelerationY = 2000;
@@ -69,6 +71,7 @@ class Halfling extends Entity{
 
     public function onButtonChange(id:Int, value:Float) {
 		if (id == XboxJoystick.LEFT_DPAD) {
+			rightDirection = false;
 			if (value == 1) {
 				collision.accelerationX = -maxSpeed * 4;
 				display.scaleX = -Math.abs(display.scaleX);
@@ -79,6 +82,7 @@ class Halfling extends Entity{
 			}
 		}
 		if (id == XboxJoystick.RIGHT_DPAD) {
+			rightDirection = true;
 			if (value == 1) {
 				collision.accelerationX = maxSpeed * 4;
 				display.scaleX = Math.abs(display.scaleX);
@@ -106,15 +110,28 @@ class Halfling extends Entity{
 
 	public function attack():Void{
 		if(GlobalGameData.heroWithSword){
-			GlobalGameData.heroAttacking = true;
-			display.timeline.playAnimation("attack", false);        
-			Timer.delay(stopAttack, 500);
+			if(!GlobalGameData.heroAttacking){
+				GlobalGameData.heroAttacking = true;
+				display.timeline.playAnimation("attack", false);   
+				attackCollision = new CollisionBox();
+				if(!rightDirection){
+					attackCollision.x = collision.x-collision.width;
+				}else{
+					attackCollision.x =collision.x;
+				}		
+				attackCollision.y = collision.y;	
+				attackCollision.width = collision.width*2;
+				attackCollision.height = collision.height;
+				GlobalGameData.attacksCollisionGroup.add(attackCollision);
+				Timer.delay(stopAttack, 300);
+			}
 		}
 		
     }
 
 	function stopAttack() {
 		GlobalGameData.heroAttacking = false;
+		attackCollision.removeFromParent();
 	}
 
 	public function damage():Void{

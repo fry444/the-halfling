@@ -1,5 +1,6 @@
 package states;
 
+import com.collision.platformer.CollisionGroup;
 import com.gEngine.display.Layer;
 
 class GlobalGameData {
@@ -9,6 +10,7 @@ class GlobalGameData {
     static public var heroWithRing: Bool = false;  
     static public var heroAttacking: Bool = false;    
     static public var heroHealth: Int = 10;
+    static public var attacksCollisionGroup: CollisionGroup;
     
 
     static public function destroy(){

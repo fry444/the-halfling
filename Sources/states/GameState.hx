@@ -80,6 +80,7 @@ class GameState extends State {
 			simulationLayer.addChild(layerTilemap.createDisplay(tileLayer));
 		}, parseMapObjects);
 		GlobalGameData.simulationLayer = simulationLayer;
+		GlobalGameData.attacksCollisionGroup = new CollisionGroup();
 		stage.defaultCamera().limits(0, 0, worldMap.widthIntTiles * 32 * 1, worldMap.heightInTiles * 32 * 1);
 
 		createTouchJoystick();
@@ -144,6 +145,7 @@ class GameState extends State {
 
 		CollisionEngine.overlap(halfling.collision, enemiesCollision, heroVsEnemy);
 		CollisionEngine.overlap(halfling.collision, powerUpsCollision, heroVsPowerUp);
+		CollisionEngine.overlap(GlobalGameData.attacksCollisionGroup, enemiesCollision, attackVsEnemy);
 	}
 
 	inline function getNextRoom(){
@@ -162,18 +164,26 @@ class GameState extends State {
 	}
 
 	function heroVsEnemy(enemyCollision: ICollider, heroCollision:ICollider){
+		
 		var enemy:Enemy = cast enemyCollision.userData;
-		var eCollision: CollisionBox = cast enemyCollision;
 		var hero:Halfling = cast heroCollision.userData;
 		var hCollision: CollisionBox = cast heroCollision;
 		if(hCollision.velocityY != 0){		
+			Console.log("JUMP COLLISION");
 			enemy.damage();		
 			hCollision.velocityY = -1000;
 		}else{
+			Console.log("HERO DAMAGE");
 			if(!GlobalGameData.heroTakingDamage){
 				hero.damage();
 			}			
 		}	
+	}
+
+	function attackVsEnemy(attackCollision: ICollider, enemyCollision:ICollider){
+		Console.log("ATTACK COLLISION");
+		var enemy:Enemy = cast enemyCollision.userData;
+		enemy.damage();		
 	}
 
 	function heroVsPowerUp(powerUpCollision: ICollider, heroCollision:ICollider){
