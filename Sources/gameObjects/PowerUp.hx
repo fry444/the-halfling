@@ -47,6 +47,9 @@ class PowerUp extends Entity{
         if(name=="sword"){
             GlobalGameData.heroWithSword=true;
         }
+        if(name=="one_ring"){
+            GlobalGameData.heroWithRing=true;
+        }
         collision.removeFromParent();    
         display.removeFromParent();    
     }

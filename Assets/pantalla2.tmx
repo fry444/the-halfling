@@ -157,6 +157,6 @@
   <object id="10" name="goblinZone" x="445.333" y="88" width="242.667" height="70.6667"/>
   <object id="14" name="goblinZone" x="693.333" y="632" width="242.667" height="70.6667"/>
   <object id="15" name="goblinZone" x="1413.33" y="308" width="242.667" height="70.6667"/>
-  <object id="16" name="powerRing" x="56" y="76" width="78.6667" height="70.6667"/>
+  <object id="16" name="powerRing" x="46.6667" y="117.333" width="78.6667" height="41.3333"/>
  </objectgroup>
 </map>

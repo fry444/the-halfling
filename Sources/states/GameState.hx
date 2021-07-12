@@ -69,6 +69,7 @@ class GameState extends State {
 			new Sequence("die", [97, 98, 99, 100, 101, 102])
 		]));
 		resources.add(new ImageLoader("sword"));
+		resources.add(new ImageLoader("one_ring"));
 		resources.add(atlas);
 	}
 
@@ -128,6 +129,9 @@ class GameState extends State {
 		}else 		
 		if(compareName(object, "powerSword")){
 			new PowerUp("sword", object.x, object.y, stage, powerUpsCollision);			
+		}else 		
+		if(compareName(object, "powerRing")){
+			new PowerUp("one_ring", object.x, object.y, stage, powerUpsCollision);			
 		}
 	}
 
@@ -175,9 +179,11 @@ class GameState extends State {
 			enemy.damage();		
 			hCollision.velocityY = -1000;
 		}else{
-			if(!GlobalGameData.heroTakingDamage){
-				hero.damage();
-			}			
+			if(!GlobalGameData.heroWithRing){
+				if(!GlobalGameData.heroTakingDamage){
+					hero.damage();
+				}			
+			}
 		}	
 	}
 
