@@ -24,7 +24,6 @@ class Wolf extends Enemy{
         collision.width = display.width();
         collision.height = display.height();
 		display.pivotX=display.width()*0.5;
-		//display.offsetY = -display.height()+5;
 		
 		display.scaleX = display.scaleY = 1;
 

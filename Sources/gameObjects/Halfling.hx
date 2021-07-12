@@ -105,9 +105,12 @@ class Halfling extends Entity{
 	}
 
 	public function attack():Void{
-		GlobalGameData.heroAttacking = true;
-		display.timeline.playAnimation("attack", false);        
-		Timer.delay(stopAttack, 500);
+		if(GlobalGameData.heroWithSword){
+			GlobalGameData.heroAttacking = true;
+			display.timeline.playAnimation("attack", false);        
+			Timer.delay(stopAttack, 500);
+		}
+		
     }
 
 	function stopAttack() {

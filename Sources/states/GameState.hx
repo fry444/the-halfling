@@ -1,5 +1,8 @@
 package states;
 
+import gameObjects.PowerUp;
+import com.loading.basicResources.ImageLoader;
+import com.gEngine.display.Sprite;
 import com.collision.platformer.Sides;
 import com.collision.platformer.ICollider;
 import paths.Linear;
@@ -36,6 +39,7 @@ class GameState extends State {
 	var actualRoom:String; 
 	var winZone:CollisionBox;
 	var enemiesCollision:CollisionGroup = new CollisionGroup();
+	var powerUpsCollision:CollisionGroup = new CollisionGroup();
 
 	public function new(room:String = "1", fromRoom:String = null) {
 		super();		
@@ -60,7 +64,7 @@ class GameState extends State {
 			new Sequence("run", [76, 77, 78, 79, 80, 81, 82, 83]),
 			new Sequence("die", [99, 100, 101, 102, 103, 104])
 		]));
-
+		resources.add(new ImageLoader("sword"));
 		resources.add(atlas);
 	}
 
@@ -109,7 +113,7 @@ class GameState extends State {
 			winZone.width = object.width;
 			winZone.height = object.height;
 		}else 
-		if(compareName(object, "enemyZone")){	
+		if(compareName(object, "wolfZone")){	
 			var pathStart = new FastVector2(object.x,object.y+5);
 			var pathEnd = new FastVector2(object.x+object.width-64,object.y+5);
 			var rightPath = new Linear(pathStart,pathEnd);
@@ -117,8 +121,10 @@ class GameState extends State {
 			var wolfPath = new Complex([rightPath, leftPath]);
 			var wolf = new Wolf(object.x, object.y-500, simulationLayer, enemiesCollision, wolfPath);
 			addChild(wolf);
+		}else 		
+		if(compareName(object, "powerSword")){
+			new PowerUp("sword", object.x, object.y, stage, powerUpsCollision);			
 		}
-		
 	}
 
 	inline function compareName(object:TmxObject, name:String){
@@ -137,7 +143,7 @@ class GameState extends State {
 		}
 
 		CollisionEngine.overlap(halfling.collision, enemiesCollision, heroVsEnemy);
-
+		CollisionEngine.overlap(halfling.collision, powerUpsCollision, heroVsPowerUp);
 	}
 
 	inline function getNextRoom(){
@@ -168,6 +174,11 @@ class GameState extends State {
 				hero.damage();
 			}			
 		}	
+	}
+
+	function heroVsPowerUp(powerUpCollision: ICollider, heroCollision:ICollider){
+		var powerUp:PowerUp = cast powerUpCollision.userData;
+		powerUp.take();
 	}
 
 	#if DEBUGDRAW
