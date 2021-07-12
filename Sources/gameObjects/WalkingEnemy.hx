@@ -1,5 +1,6 @@
 package gameObjects;
 
+import paths.Complex;
 import paths.Path;
 import kha.math.FastVector2;
 import paths.Linear;
@@ -10,25 +11,38 @@ import com.collision.platformer.CollisionGroup;
 import com.gEngine.display.Layer;
 import js.html.Console;
 
-class Wolf extends Enemy{
+class WalkingEnemy extends Enemy{
 
-    private var pathWalker: PathWalker;
+    private var pathWalker: PathWalker;    
 
-    public function new(x:Float, y:Float, layer:Layer, collisionGroup:CollisionGroup, path:Path) {
-        super(x,y,layer,collisionGroup);
-        display = new Sprite("wolf");
+    public function new(x:Float, y:Float, width:Float, height:Float,scale:Float, name:String, layer:Layer, collisionGroup:CollisionGroup) {
+        super(x,y,width, height, scale, layer,collisionGroup);        
+        var pathStart = new FastVector2(x,y);
+		var pathEnd = new FastVector2(x+width,y);
+		var rightPath = new Linear(pathStart,pathEnd);
+		var leftPath = new Linear(pathEnd,pathStart);
+		var path = new Complex([rightPath, leftPath]);
+		
+        display = new Sprite(name);
         display.timeline.playAnimation("run");
         display.smooth = false;
         layer.addChild(display);
         
-        collision.width = display.width();
-        collision.height = display.height();
+        collision.width = display.width()*scale;
+        
+        collision.height = display.height()*scale;
 		display.pivotX=display.width()*0.5;
 		
-		display.scaleX = display.scaleY = 1;
+		display.scaleX = display.scaleY = scale;
 
 		collision.x=x;
 		collision.y=y;
+
+        if(name=="goblin"){
+            collision.width = collision.width*0.5;
+            display.scaleY = 2.5;
+            display.offsetY = -32;
+        }
 
         collisionGroup.add(collision);
 		collision.userData = this;

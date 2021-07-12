@@ -1,5 +1,6 @@
 package states;
 
+import gameObjects.WalkingEnemy;
 import gameObjects.PowerUp;
 import com.loading.basicResources.ImageLoader;
 import com.gEngine.display.Sprite;
@@ -7,7 +8,6 @@ import com.collision.platformer.Sides;
 import com.collision.platformer.ICollider;
 import paths.Linear;
 import paths.Complex;
-import gameObjects.Wolf;
 import gameObjects.Enemy;
 import com.collision.platformer.CollisionGroup;
 import com.collision.platformer.CollisionBox;
@@ -41,7 +41,7 @@ class GameState extends State {
 	var enemiesCollision:CollisionGroup = new CollisionGroup();
 	var powerUpsCollision:CollisionGroup = new CollisionGroup();
 
-	public function new(room:String = "1", fromRoom:String = null) {
+	public function new(room:String = "2", fromRoom:String = null) {
 		super();		
 		this.actualRoom = room;
 	}
@@ -49,7 +49,6 @@ class GameState extends State {
 	override function load(resources:Resources) {
 		resources.add(new DataLoader("pantalla"+actualRoom+"_tmx"));
 		var atlas = new JoinAtlas(2048, 2048);
-
 		atlas.add(new TilesheetLoader("tiles"+actualRoom, 32, 32, 0));
 		atlas.add(new SpriteSheetLoader("halfling", 50, 37, 0, [
 			new Sequence("die", [64, 65, 66, 67, 68]),
@@ -63,6 +62,11 @@ class GameState extends State {
 			new Sequence("idle", [1, 2, 3, 4, 5, 6]),
 			new Sequence("run", [76, 77, 78, 79, 80, 81, 82, 83]),
 			new Sequence("die", [99, 100, 101, 102, 103, 104])
+		]));
+		atlas.add(new SpriteSheetLoader("goblin", 80, 64, 0, [
+			new Sequence("idle", [1, 2, 3, 4]),
+			new Sequence("run", [33, 34, 35, 36, 37, 38, 39, 40, 41, 42]),
+			new Sequence("die", [97, 98, 99, 100, 101, 102])
 		]));
 		resources.add(new ImageLoader("sword"));
 		resources.add(atlas);
@@ -115,13 +119,12 @@ class GameState extends State {
 			winZone.height = object.height;
 		}else 
 		if(compareName(object, "wolfZone")){	
-			var pathStart = new FastVector2(object.x,object.y+5);
-			var pathEnd = new FastVector2(object.x+object.width-64,object.y+5);
-			var rightPath = new Linear(pathStart,pathEnd);
-			var leftPath = new Linear(pathEnd,pathStart);
-			var wolfPath = new Complex([rightPath, leftPath]);
-			var wolf = new Wolf(object.x, object.y-500, simulationLayer, enemiesCollision, wolfPath);
+			var wolf = new WalkingEnemy(object.x, object.y, 64, 48 ,1, "wolf", simulationLayer, enemiesCollision);
 			addChild(wolf);
+		}else 
+		if(compareName(object, "goblinZone")){	
+			var goblin = new WalkingEnemy(object.x-40, object.y-55, 80, 64 ,2, "goblin", simulationLayer, enemiesCollision);
+			addChild(goblin);			
 		}else 		
 		if(compareName(object, "powerSword")){
 			new PowerUp("sword", object.x, object.y, stage, powerUpsCollision);			
@@ -169,11 +172,9 @@ class GameState extends State {
 		var hero:Halfling = cast heroCollision.userData;
 		var hCollision: CollisionBox = cast heroCollision;
 		if(hCollision.velocityY != 0){		
-			Console.log("JUMP COLLISION");
 			enemy.damage();		
 			hCollision.velocityY = -1000;
 		}else{
-			Console.log("HERO DAMAGE");
 			if(!GlobalGameData.heroTakingDamage){
 				hero.damage();
 			}			
@@ -181,7 +182,6 @@ class GameState extends State {
 	}
 
 	function attackVsEnemy(attackCollision: ICollider, enemyCollision:ICollider){
-		Console.log("ATTACK COLLISION");
 		var enemy:Enemy = cast enemyCollision.userData;
 		enemy.damage();		
 	}
