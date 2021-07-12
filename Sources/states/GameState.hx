@@ -48,11 +48,12 @@ class GameState extends State {
 
 		atlas.add(new TilesheetLoader("tiles"+actualRoom, 32, 32, 0));
 		atlas.add(new SpriteSheetLoader("halfling", 50, 37, 0, [
-			new Sequence("die", [64, 65, 66, 67,68, 69]),
+			new Sequence("die", [64, 65, 66, 67, 68]),
 			new Sequence("jump", [15, 16, 17, 18 ]),
 			new Sequence("fall", [19, 20, 21, 22, 23]),
 			new Sequence("run", [8, 9, 10, 11, 12, 13]),
-			new Sequence("idle", [0, 1, 2, 3])
+			new Sequence("idle", [0, 1, 2, 3]),
+			new Sequence("attack", [49, 50, 51, 52])
 		]));
 		atlas.add(new SpriteSheetLoader("wolf", 64, 48, 0, [
 			new Sequence("idle", [1, 2, 3, 4, 5, 6]),
@@ -86,7 +87,7 @@ class GameState extends State {
 		touchJoystick.addKeyButton(XboxJoystick.RIGHT_DPAD, KeyCode.Right);
 		touchJoystick.addKeyButton(XboxJoystick.UP_DPAD, KeyCode.Up);
 		touchJoystick.addKeyButton(XboxJoystick.A, KeyCode.Space);
-		touchJoystick.addKeyButton(XboxJoystick.X, KeyCode.X);
+		touchJoystick.addKeyButton(XboxJoystick.X, KeyCode.A);
 		
 		touchJoystick.notify(halfling.onAxisChange, halfling.onButtonChange);
 

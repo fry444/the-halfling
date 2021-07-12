@@ -48,16 +48,18 @@ class Halfling extends Entity{
     override function render() {
 		var s = Math.abs(collision.velocityX / collision.maxVelocityX);
 		display.timeline.frameRate = (1 / 24) * s + (1 - s) * (1 / 10);
-		if(!GlobalGameData.heroTakingDamage){
-			if (collision.isTouching(Sides.BOTTOM) && collision.velocityX == 0) {
-				display.timeline.playAnimation("idle");
-			} else if (collision.isTouching(Sides.BOTTOM) && collision.velocityX != 0) {
-				display.timeline.playAnimation("run");
-			} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY > 0) {
-				display.timeline.playAnimation("fall");
-			} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY < 0) {
-				display.timeline.playAnimation("jump");
-			}
+		if(!GlobalGameData.heroTakingDamage ){
+			if(!GlobalGameData.heroAttacking){
+				if (collision.isTouching(Sides.BOTTOM) && collision.velocityX == 0) {
+					display.timeline.playAnimation("idle");
+				} else if (collision.isTouching(Sides.BOTTOM) && collision.velocityX != 0) {
+					display.timeline.playAnimation("run");
+				} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY > 0) {
+					display.timeline.playAnimation("fall");
+				} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY < 0) {
+					display.timeline.playAnimation("jump");
+				}
+			}			 
 		}else{
 			display.timeline.playAnimation("die");	
 		}        
@@ -90,11 +92,26 @@ class Halfling extends Entity{
 			if (value == 1) {				
                 collision.velocityY = -1000;
 			}
+		}	
+		if (id == XboxJoystick.X) {
+			if (value == 1) {				
+                attack();
+			}
 		}		
 	}
 
     public function onAxisChange(id:Int, value:Float) {
 
+	}
+
+	public function attack():Void{
+		GlobalGameData.heroAttacking = true;
+		display.timeline.playAnimation("attack", false);        
+		Timer.delay(stopAttack, 500);
+    }
+
+	function stopAttack() {
+		GlobalGameData.heroAttacking = false;
 	}
 
 	public function damage():Void{
