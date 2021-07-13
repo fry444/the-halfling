@@ -41,7 +41,6 @@ class PowerUp extends Entity{
 	}    
 
     public function take():Void{
-        Console.log("Hero has "+name);
         if(name=="sword"){
             GlobalGameData.heroWithSword=true;
         }

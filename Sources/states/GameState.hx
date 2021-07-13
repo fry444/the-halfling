@@ -1,5 +1,6 @@
 package states;
 
+import gameObjects.ShooterEnemy;
 import js.html.Console;
 import gameObjects.FlyingEnemy;
 import gameObjects.WalkingEnemy;
@@ -37,7 +38,7 @@ class GameState extends State {
 	var enemiesCollision:CollisionGroup = new CollisionGroup();
 	var powerUpsCollision:CollisionGroup = new CollisionGroup();
 
-	public function new(room:String = "2", fromRoom:String = null) {
+	public function new(room:String = "3", fromRoom:String = null) {
 		super();		
 		this.actualRoom = room;
 	}
@@ -68,6 +69,11 @@ class GameState extends State {
 			new Sequence("idle", [2, 3, 4, 5, 8, 9, 10, 11]),
 			new Sequence("fly", [44, 45, 46, 47]),
 			new Sequence("die", [72, 73, 74, 75, 76, 77, 78])
+		]));
+		atlas.add(new SpriteSheetLoader("archer", 100, 100, 0, [
+			new Sequence("idle", [0, 1, 2, 3, 4, 5, 8, 9]),
+			new Sequence("attack", [10, 11, 12, 13, 14, 15]),
+			new Sequence("die", [20, 21, 22, 23, 24, 25, 26, 27, 28, 29])
 		]));
 		resources.add(new ImageLoader("sword"));
 		resources.add(new ImageLoader("one_ring"));
@@ -109,7 +115,6 @@ class GameState extends State {
 	function parseMapObjects(layerTilemap:Tilemap, object:TmxObject) {
 		if(compareName(object, "startZone")){
 			if(halfling==null){
-				Console.log("New Halfling");
 				halfling = new Halfling(object.x, object.y, simulationLayer);
 				addChild(halfling);
 			}
@@ -140,7 +145,15 @@ class GameState extends State {
 		if(compareName(object, "batZone")){	
 			var bat = new FlyingEnemy(object.x, object.y, 32, 32 ,2, "bat", simulationLayer, enemiesCollision, halfling.collision);
 			addChild(bat);			
-		}else 		
+		}else 	
+		if(compareName(object, "rightArrowZone")){	
+			var archer = new ShooterEnemy(object.x, object.y, 100, 100 ,1.5, "archer", simulationLayer, enemiesCollision, halfling.collision,1);
+			addChild(archer);			
+		}else	
+		if(compareName(object, "leftArrowZone")){	
+			var archer = new ShooterEnemy(object.x, object.y, 100, 100 ,1.5, "archer", simulationLayer, enemiesCollision, halfling.collision,0);
+			addChild(archer);			
+		}else	
 		if(compareName(object, "powerSword")){
 			new PowerUp("sword", object.x, object.y, stage, powerUpsCollision);			
 		}else 		
