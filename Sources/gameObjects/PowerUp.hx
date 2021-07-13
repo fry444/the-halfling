@@ -1,5 +1,6 @@
 package gameObjects;
 
+import com.soundLib.SoundManager;
 import states.GlobalGameData;
 import com.gEngine.display.Stage;
 import js.html.Console;
@@ -41,6 +42,7 @@ class PowerUp extends Entity{
 	}    
 
     public function take():Void{
+        SoundManager.playFx("power_up_sound",false);
         if(name=="sword"){
             GlobalGameData.heroWithSword=true;
         }

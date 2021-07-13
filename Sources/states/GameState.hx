@@ -61,6 +61,7 @@ class GameState extends State {
 		resources.add(new SoundLoader("sword_sound"));
 		resources.add(new SoundLoader("wolf_near_sound"));
 		resources.add(new SoundLoader("wolf_death_sound"));
+		resources.add(new SoundLoader("power_up_sound"));
 
 		resources.add(new DataLoader("pantalla"+actualRoom+"_tmx"));
 		var atlas = new JoinAtlas(2048, 2048);
