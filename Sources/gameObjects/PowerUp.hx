@@ -4,8 +4,6 @@ import states.GlobalGameData;
 import com.gEngine.display.Stage;
 import js.html.Console;
 import com.collision.platformer.CollisionGroup;
-import com.gEngine.display.Layer;
-import kha.math.FastVector2;
 import com.collision.platformer.CollisionBox;
 import com.gEngine.display.Sprite;
 import com.framework.utils.Entity;

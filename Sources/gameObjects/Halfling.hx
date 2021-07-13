@@ -1,9 +1,8 @@
 package gameObjects;
 
-import com.collision.platformer.CollisionGroup;
+import js.html.Console;
 import haxe.Timer;
 import states.GlobalGameData;
-import js.html.Console;
 import com.framework.utils.XboxJoystick;
 import com.collision.platformer.Sides;
 import com.gEngine.display.Layer;

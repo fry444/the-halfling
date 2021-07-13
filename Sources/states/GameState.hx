@@ -1,17 +1,14 @@
 package states;
 
+import js.html.Console;
+import gameObjects.FlyingEnemy;
 import gameObjects.WalkingEnemy;
 import gameObjects.PowerUp;
 import com.loading.basicResources.ImageLoader;
-import com.gEngine.display.Sprite;
-import com.collision.platformer.Sides;
 import com.collision.platformer.ICollider;
-import paths.Linear;
-import paths.Complex;
 import gameObjects.Enemy;
 import com.collision.platformer.CollisionGroup;
 import com.collision.platformer.CollisionBox;
-import js.html.Console;
 import gameObjects.Halfling;
 import com.gEngine.display.extra.TileMapDisplay;
 import com.framework.utils.XboxJoystick;
@@ -28,7 +25,6 @@ import com.collision.platformer.Tilemap;
 import com.loading.basicResources.JoinAtlas;
 import com.loading.Resources;
 import com.framework.utils.State;
-import kha.math.FastVector2;
 
 class GameState extends State {
 	var worldMap:Tilemap;
@@ -67,6 +63,11 @@ class GameState extends State {
 			new Sequence("idle", [1, 2, 3, 4]),
 			new Sequence("run", [33, 34, 35, 36, 37, 38, 39, 40, 41, 42]),
 			new Sequence("die", [97, 98, 99, 100, 101, 102])
+		]));
+		atlas.add(new SpriteSheetLoader("bat", 32, 32, 0, [
+			new Sequence("idle", [2, 3, 4, 5, 8, 9, 10, 11]),
+			new Sequence("fly", [44, 45, 46, 47]),
+			new Sequence("die", [72, 73, 74, 75, 76, 77, 78])
 		]));
 		resources.add(new ImageLoader("sword"));
 		resources.add(new ImageLoader("one_ring"));
@@ -108,6 +109,7 @@ class GameState extends State {
 	function parseMapObjects(layerTilemap:Tilemap, object:TmxObject) {
 		if(compareName(object, "startZone")){
 			if(halfling==null){
+				Console.log("New Halfling");
 				halfling = new Halfling(object.x, object.y, simulationLayer);
 				addChild(halfling);
 			}
@@ -126,6 +128,18 @@ class GameState extends State {
 		if(compareName(object, "goblinZone")){	
 			var goblin = new WalkingEnemy(object.x-40, object.y-55, 80, 64 ,2, "goblin", simulationLayer, enemiesCollision);
 			addChild(goblin);			
+		}else 
+		if(compareName(object, "multipleGoblinZone")){	
+			var goblinCount = 5;
+			for(p in 0 ... goblinCount){
+				var xPosition:Float = (object.x-40)+(object.width/goblinCount)*p;
+				var goblin = new WalkingEnemy(xPosition, object.y-55, 80, 64 ,2, "goblin", simulationLayer, enemiesCollision);
+				addChild(goblin);			
+			}			
+		}else 
+		if(compareName(object, "batZone")){	
+			var bat = new FlyingEnemy(object.x, object.y, 32, 32 ,2, "bat", simulationLayer, enemiesCollision, halfling.collision);
+			addChild(bat);			
 		}else 		
 		if(compareName(object, "powerSword")){
 			new PowerUp("sword", object.x, object.y, stage, powerUpsCollision);			

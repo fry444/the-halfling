@@ -1,27 +1,29 @@
 package gameObjects;
 
-import paths.Complex;
-import kha.math.FastVector2;
-import paths.Linear;
-import paths.PathWalker;
+import haxe.Timer;
+import js.html.Console;
+import com.collision.platformer.CollisionBox;
 import com.gEngine.display.Sprite;
+import paths.Complex;
+import paths.Linear;
+import kha.math.FastVector2;
 import com.collision.platformer.CollisionGroup;
 import com.gEngine.display.Layer;
+import paths.PathWalker;
 
-class WalkingEnemy extends Enemy{
+class FlyingEnemy extends Enemy{
+    private var pathWalker: PathWalker;  
+    var flying:Bool;
+    var originalPosition: FastVector2;
+    var hero: CollisionBox;
 
-    private var pathWalker: PathWalker;    
-
-    public function new(x:Float, y:Float, width:Float, height:Float,scale:Float, name:String, layer:Layer, collisionGroup:CollisionGroup) {
+    public function new(x:Float, y:Float, width:Float, height:Float,scale:Float, name:String, layer:Layer, collisionGroup:CollisionGroup, heroCollision: CollisionBox) {
         super(x,y,width, height, scale, layer,collisionGroup);        
-        var pathStart = new FastVector2(x,y);
-		var pathEnd = new FastVector2(x+width,y);
-		var rightPath = new Linear(pathStart,pathEnd);
-		var leftPath = new Linear(pathEnd,pathStart);
-		var path = new Complex([rightPath, leftPath]);
+        originalPosition = new FastVector2(x,y);  
+        hero = heroCollision;
 		
         display = new Sprite(name);
-        display.timeline.playAnimation("run");
+        display.timeline.playAnimation("idle");
         display.smooth = false;
         layer.addChild(display);
         
@@ -32,21 +34,26 @@ class WalkingEnemy extends Enemy{
 		
 		display.scaleX = display.scaleY = scale;
 
-		collision.x=x;
-		collision.y=y;
-
-        if(name=="goblin"){
-            collision.width = collision.width*0.5;
-            display.scaleY = 2.5;
-            display.offsetY = -32;
-        }
+		collision.x=x+5;
+		collision.y=y-20;
 
         collisionGroup.add(collision);
 		collision.userData = this;
 
         dir=new FastVector2(0,1);
+    }
 
-        pathWalker = new PathWalker(path,5,PlayMode.Loop);
+    public function createPath(from:FastVector2, to: FastVector2) {
+        var goPath = new Linear(from,to);
+        var backPath = new Linear(to,from);
+        var path = new Complex([goPath, backPath]);
+        pathWalker = new PathWalker(path,4,PlayMode.Loop);
+    }
+
+    public function startFlying(x:Float, y:Float){
+        createPath(originalPosition, new FastVector2(x, y));
+        display.timeline.playAnimation("fly");
+        flying = true;
     }
 
     override public function update(dt:Float):Void {
@@ -55,7 +62,8 @@ class WalkingEnemy extends Enemy{
             if (!display.timeline.playing) {
                 die();
             }
-        }else{
+        }else
+        if(flying){
             pathWalker.update(dt);
             collision.x = pathWalker.x;
             collision.y = pathWalker.y;			
@@ -66,8 +74,13 @@ class WalkingEnemy extends Enemy{
 
             if(pathWalker.finish()){
                 die();
+            }                
+        }else{
+            var distanceXToHero = Math.abs(hero.x - collision.x);
+            var distanceYToHero = Math.abs(hero.y - collision.y);
+            if(distanceXToHero<=200 && distanceYToHero<=200 ){ 
+                startFlying(hero.x,hero.y);
             }
-                
         }
         super.update(dt);        
     }
@@ -91,5 +104,6 @@ class WalkingEnemy extends Enemy{
 		super.render();		
 		
 	}
+    
     
 }
