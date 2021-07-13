@@ -36,6 +36,7 @@ class GameState extends State {
 	var actualRoom:String; 
 	var winZone:CollisionBox;
 	var enemiesCollision:CollisionGroup = new CollisionGroup();
+	var arrowsCollision:CollisionGroup = new CollisionGroup();
 	var powerUpsCollision:CollisionGroup = new CollisionGroup();
 
 	public function new(room:String = "3", fromRoom:String = null) {
@@ -72,11 +73,12 @@ class GameState extends State {
 		]));
 		atlas.add(new SpriteSheetLoader("archer", 100, 100, 0, [
 			new Sequence("idle", [0, 1, 2, 3, 4, 5, 8, 9]),
-			new Sequence("attack", [10, 11, 12, 13, 14, 15]),
+			new Sequence("attack", [13, 14, 15]),
 			new Sequence("die", [20, 21, 22, 23, 24, 25, 26, 27, 28, 29])
 		]));
 		resources.add(new ImageLoader("sword"));
 		resources.add(new ImageLoader("one_ring"));
+		resources.add(new ImageLoader("arrow"));
 		resources.add(atlas);
 	}
 
@@ -147,11 +149,11 @@ class GameState extends State {
 			addChild(bat);			
 		}else 	
 		if(compareName(object, "rightArrowZone")){	
-			var archer = new ShooterEnemy(object.x, object.y, 100, 100 ,1.5, "archer", simulationLayer, enemiesCollision, halfling.collision,1);
+			var archer = new ShooterEnemy(object.x, object.y, 100, 100 ,1.5, "archer", simulationLayer, enemiesCollision, halfling.collision,arrowsCollision,1);
 			addChild(archer);			
 		}else	
 		if(compareName(object, "leftArrowZone")){	
-			var archer = new ShooterEnemy(object.x, object.y, 100, 100 ,1.5, "archer", simulationLayer, enemiesCollision, halfling.collision,0);
+			var archer = new ShooterEnemy(object.x, object.y, 100, 100 ,1.5, "archer", simulationLayer, enemiesCollision, halfling.collision,arrowsCollision,-1);
 			addChild(archer);			
 		}else	
 		if(compareName(object, "powerSword")){
@@ -178,6 +180,7 @@ class GameState extends State {
 		}
 
 		CollisionEngine.overlap(halfling.collision, enemiesCollision, heroVsEnemy);
+		CollisionEngine.overlap(halfling.collision, arrowsCollision, heroVsArrow);
 		CollisionEngine.overlap(halfling.collision, powerUpsCollision, heroVsPowerUp);
 		CollisionEngine.overlap(GlobalGameData.attacksCollisionGroup, enemiesCollision, attackVsEnemy);
 	}
@@ -212,6 +215,15 @@ class GameState extends State {
 				}			
 			}
 		}	
+	}
+
+	function heroVsArrow(arrowCollision: ICollider, heroCollision:ICollider){
+		var hero:Halfling = cast heroCollision.userData;
+		if(!GlobalGameData.heroWithRing){
+			if(!GlobalGameData.heroTakingDamage){
+				hero.damage();
+			}			
+		}
 	}
 
 	function attackVsEnemy(attackCollision: ICollider, enemyCollision:ICollider){
