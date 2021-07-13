@@ -39,6 +39,7 @@ class GameState extends State {
 	var touchJoystick:VirtualGamepad;
 	var actualRoom:String; 
 	var winZone:CollisionBox;
+	var limits:CollisionGroup = new CollisionGroup();
 	var enemiesCollision:CollisionGroup = new CollisionGroup();
 	var arrowsCollision:CollisionGroup = new CollisionGroup();
 	var powerUpsCollision:CollisionGroup = new CollisionGroup();
@@ -185,6 +186,14 @@ class GameState extends State {
 			winZone.width = object.width;
 			winZone.height = object.height;
 		}else 
+		if(compareName(object, "limit")){
+			var limit = new CollisionBox();
+			limit.x = object.x;
+			limit.y = object.y;
+			limit.width = object.width;
+			limit.height = object.height;
+			limits.add(limit);
+		}else 
 		if(compareName(object, "wolfZone")){	
 			var wolf = new WalkingEnemy(object.x, object.y, 64, 48 ,1, "wolf", simulationLayer, enemiesCollision, halfling.collision);
 			addChild(wolf);
@@ -231,6 +240,7 @@ class GameState extends State {
 		stage.defaultCamera().setTarget(halfling.collision.x, halfling.collision.y);
 
 		CollisionEngine.collide(halfling.collision,worldMap.collision);
+		CollisionEngine.collide(halfling.collision,limits);
 
 		if(CollisionEngine.overlap(halfling.collision, winZone)){
 			changeState(new GameState(getNextRoom(),actualRoom));

@@ -31,7 +31,7 @@ class ShooterEnemy extends Enemy{
         display.smooth = false;
         layer.addChild(display);
         
-        collision.width = display.width()*scale;
+        collision.width = display.width();
         
         collision.height = display.height()*scale;
 		display.pivotX=display.width()*0.5;
