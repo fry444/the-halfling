@@ -1,5 +1,6 @@
 package gameObjects;
 
+import com.soundLib.SoundManager;
 import js.html.Console;
 import haxe.Timer;
 import com.collision.platformer.CollisionGroup;
@@ -9,8 +10,7 @@ import com.gEngine.display.Sprite;
 import com.collision.platformer.CollisionBox;
 
 class ShooterEnemy extends Enemy{
-    var shooting: Bool;
-    var hero: CollisionBox;
+    var shooting: Bool;    
     var projectileCollison: CollisionGroup;
     var layer: Layer;
     var shootedArrow: Bool = false;
@@ -22,6 +22,7 @@ class ShooterEnemy extends Enemy{
             
         super(x,y,width, height, scale, layer,collisionGroup);        
         hero = heroCollision;
+        sound = name;
         projectileCollison=projectileCollisionGroup;
 		layer = gameLayer;
 
@@ -79,9 +80,10 @@ class ShooterEnemy extends Enemy{
         var arrow:Arrow=new Arrow(x, y, layer, dir,projectileCollison);
         shootedArrow = true;
         addChild(arrow);
+        SoundManager.playFx("arrow_sound",false);
     }
     
-    override function destroy() {
+    override function destroy() {        
         display.removeFromParent();
         collision.removeFromParent();
     }

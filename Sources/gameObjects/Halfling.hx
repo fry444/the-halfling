@@ -1,5 +1,6 @@
 package gameObjects;
 
+import com.soundLib.SoundManager;
 import js.html.Console;
 import haxe.Timer;
 import states.GlobalGameData;
@@ -97,7 +98,7 @@ class Halfling extends Entity{
 			}
 		}	
 		if (id == XboxJoystick.X) {
-			if (value == 1) {				
+			if (value == 1) {								
                 attack();
 			}
 		}		
@@ -112,6 +113,7 @@ class Halfling extends Entity{
 			if(!GlobalGameData.heroAttacking){
 				GlobalGameData.heroAttacking = true;
 				display.timeline.playAnimation("attack", false);   
+				SoundManager.playFx("sword_sound");
 				attackCollision = new CollisionBox();
 				if(!rightDirection){
 					attackCollision.x = collision.x-collision.width;

@@ -1,5 +1,6 @@
 package gameObjects;
 
+import com.collision.platformer.CollisionBox;
 import paths.Complex;
 import kha.math.FastVector2;
 import paths.Linear;
@@ -12,13 +13,16 @@ class WalkingEnemy extends Enemy{
 
     private var pathWalker: PathWalker;    
 
-    public function new(x:Float, y:Float, width:Float, height:Float,scale:Float, name:String, layer:Layer, collisionGroup:CollisionGroup) {
+    public function new(x:Float, y:Float, width:Float, height:Float,scale:Float, name:String, layer:Layer, 
+        collisionGroup:CollisionGroup, heroCollision: CollisionBox) {
         super(x,y,width, height, scale, layer,collisionGroup);        
         var pathStart = new FastVector2(x,y);
 		var pathEnd = new FastVector2(x+width,y);
 		var rightPath = new Linear(pathStart,pathEnd);
 		var leftPath = new Linear(pathEnd,pathStart);
 		var path = new Complex([rightPath, leftPath]);
+        sound = name;
+        hero = heroCollision;
 		
         display = new Sprite(name);
         display.timeline.playAnimation("run");

@@ -1,5 +1,6 @@
 package gameObjects;
 
+import com.soundLib.SoundManager;
 import haxe.Timer;
 import js.html.Console;
 import com.collision.platformer.CollisionBox;
@@ -15,12 +16,12 @@ class FlyingEnemy extends Enemy{
     private var pathWalker: PathWalker;  
     var flying:Bool;
     var originalPosition: FastVector2;
-    var hero: CollisionBox;
 
     public function new(x:Float, y:Float, width:Float, height:Float,scale:Float, name:String, layer:Layer, collisionGroup:CollisionGroup, heroCollision: CollisionBox) {
         super(x,y,width, height, scale, layer,collisionGroup);        
         originalPosition = new FastVector2(x,y);  
         hero = heroCollision;
+        sound = "bat";
 		
         display = new Sprite(name);
         display.timeline.playAnimation("idle");
@@ -52,7 +53,7 @@ class FlyingEnemy extends Enemy{
 
     public function startFlying(x:Float, y:Float){
         createPath(originalPosition, new FastVector2(x, y));
-        display.timeline.playAnimation("fly");
+        display.timeline.playAnimation("fly");        
         flying = true;
     }
 
