@@ -34,7 +34,6 @@ class Enemy extends Entity{
             var distanceYToHero = Math.abs(hero.y - collision.y);
             if(!playingProximitySound){
                 if(distanceXToHero<=200 && distanceYToHero<=200 ){ 
-                    Console.log("Proximity to: "+sound);
                     playProximitySound();
                 }
             }  

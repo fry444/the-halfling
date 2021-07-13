@@ -1,9 +1,12 @@
 package states;
 
+import com.gEngine.display.Sprite;
+import com.loading.basicResources.FontLoader;
+import com.gEngine.display.Text;
+import com.gEngine.display.StaticLayer;
 import com.soundLib.SoundManager;
 import com.loading.basicResources.SoundLoader;
 import gameObjects.ShooterEnemy;
-import js.html.Console;
 import gameObjects.FlyingEnemy;
 import gameObjects.WalkingEnemy;
 import gameObjects.PowerUp;
@@ -13,7 +16,6 @@ import gameObjects.Enemy;
 import com.collision.platformer.CollisionGroup;
 import com.collision.platformer.CollisionBox;
 import gameObjects.Halfling;
-import com.gEngine.display.extra.TileMapDisplay;
 import com.framework.utils.XboxJoystick;
 import com.framework.utils.VirtualGamepad;
 import format.tmx.Data.TmxObject;
@@ -30,16 +32,17 @@ import com.loading.Resources;
 import com.framework.utils.State;
 
 class GameState extends State {
+	var hudLayer:StaticLayer;
 	var worldMap:Tilemap;
 	var halfling:Halfling;
 	var simulationLayer:Layer;
 	var touchJoystick:VirtualGamepad;
-	var mayonnaiseMap:TileMapDisplay;
 	var actualRoom:String; 
 	var winZone:CollisionBox;
 	var enemiesCollision:CollisionGroup = new CollisionGroup();
 	var arrowsCollision:CollisionGroup = new CollisionGroup();
 	var powerUpsCollision:CollisionGroup = new CollisionGroup();
+	var healthValue:Text; 
 
 	public function new(room:String = "3", fromRoom:String = null) {
 		super();		
@@ -94,6 +97,7 @@ class GameState extends State {
 			new Sequence("attack", [13, 14, 15]),
 			new Sequence("die", [20, 21, 22, 23, 24, 25, 26, 27, 28, 29])
 		]));
+		atlas.add(new FontLoader("Kenney_Thick",18));
 		resources.add(new ImageLoader("sword"));
 		resources.add(new ImageLoader("one_ring"));
 		resources.add(new ImageLoader("arrow"));
@@ -103,6 +107,7 @@ class GameState extends State {
 	override function init() {
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);
+		hudLayer=new StaticLayer();		
 
 		worldMap = new Tilemap("pantalla"+actualRoom+"_tmx", "tiles"+actualRoom);
 		worldMap.init(function(layerTilemap, tileLayer) {
@@ -111,11 +116,45 @@ class GameState extends State {
 			}
 			simulationLayer.addChild(layerTilemap.createDisplay(tileLayer));
 		}, parseMapObjects);
+		stage.addChild(hudLayer);
 		GlobalGameData.simulationLayer = simulationLayer;
 		GlobalGameData.attacksCollisionGroup = new CollisionGroup();
 		stage.defaultCamera().limits(0, 0, worldMap.widthIntTiles * 32 * 1, worldMap.heightInTiles * 32 * 1);
 		SoundManager.playMusic("pantalla"+actualRoom,true);
-		createTouchJoystick();
+		createTouchJoystick();	
+		createHud();	
+	}
+
+	function createHud(){
+		var healthText = new Text("Kenney_Thick");
+        healthText.x=50;
+        healthText.y=50;
+        healthText.text="HEALTH";
+        hudLayer.addChild(healthText);  
+		healthValue = new Text("Kenney_Thick");
+        healthValue.x=180;
+        healthValue.y=50;
+        healthValue.text=""+GlobalGameData.heroHealth;
+		hudLayer.addChild(healthValue);  
+	}
+
+	function updateHud(){
+		healthValue.text=""+GlobalGameData.heroHealth;
+		if(GlobalGameData.heroWithSword){
+			var sword = new Sprite("sword");
+        	sword.x = 1200;
+        	sword.y = 40;
+        	sword.smooth = false;
+        	hudLayer.addChild(sword);
+		}
+		if(GlobalGameData.heroWithRing){
+			var ring = new Sprite("one_ring");
+        	ring.x = 1130;
+        	ring.y = 50;
+        	ring.smooth = false;
+        	hudLayer.addChild(ring);
+		}
+		hudLayer.update(1);
 	}
 
 	function createTouchJoystick() {
@@ -218,8 +257,7 @@ class GameState extends State {
 		}
 	}
 
-	function heroVsEnemy(enemyCollision: ICollider, heroCollision:ICollider){
-		
+	function heroVsEnemy(enemyCollision: ICollider, heroCollision:ICollider){		
 		var enemy:Enemy = cast enemyCollision.userData;
 		var hero:Halfling = cast heroCollision.userData;
 		var hCollision: CollisionBox = cast heroCollision;
@@ -230,6 +268,7 @@ class GameState extends State {
 			if(!GlobalGameData.heroWithRing){
 				if(!GlobalGameData.heroTakingDamage){
 					hero.damage();
+					updateHud();
 				}			
 			}
 		}	
@@ -240,6 +279,7 @@ class GameState extends State {
 		if(!GlobalGameData.heroWithRing){
 			if(!GlobalGameData.heroTakingDamage){
 				hero.damage();
+				updateHud();
 			}			
 		}
 	}
@@ -252,6 +292,7 @@ class GameState extends State {
 	function heroVsPowerUp(powerUpCollision: ICollider, heroCollision:ICollider){
 		var powerUp:PowerUp = cast powerUpCollision.userData;
 		powerUp.take();
+		updateHud();
 	}
 
 	#if DEBUGDRAW
