@@ -71,7 +71,12 @@ class GameState extends State {
 			new Sequence("fall", [19, 20, 21, 22, 23]),
 			new Sequence("run", [8, 9, 10, 11, 12, 13]),
 			new Sequence("idle", [0, 1, 2, 3]),
-			new Sequence("attack", [49, 50, 51, 52])
+			new Sequence("attack", [49, 50, 51, 52]),
+			new Sequence("ring_jump", [92, 93, 94, 95 ]),
+			new Sequence("ring_fall", [96, 97, 98, 99, 100]),
+			new Sequence("ring_run", [85, 86 ,87, 88, 89, 90]),
+			new Sequence("ring_idle", [77, 78, 79, 80]),
+			new Sequence("ring_attack", [126, 127, 128, 129])
 		]));
 		atlas.add(new SpriteSheetLoader("wolf", 64, 48, 0, [
 			new Sequence("idle", [1, 2, 3, 4, 5, 6]),

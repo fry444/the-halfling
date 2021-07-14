@@ -54,23 +54,43 @@ class Halfling extends Entity{
     override function render() {
 		var s = Math.abs(collision.velocityX / collision.maxVelocityX);
 		display.timeline.frameRate = (1 / 24) * s + (1 - s) * (1 / 10);
-		if(!GlobalGameData.heroTakingDamage ){
-			if(!GlobalGameData.heroAttacking){
-				if (collision.isTouching(Sides.BOTTOM) && collision.velocityX == 0) {
-					display.timeline.playAnimation("idle");
-				} else if (collision.isTouching(Sides.BOTTOM) && collision.velocityX != 0) {
-					display.timeline.playAnimation("run");
-				} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY > 0) {
-					display.timeline.playAnimation("fall");
-				} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY < 0) {
-					display.timeline.playAnimation("jump");
-				}
+		if(!GlobalGameData.heroWithRing){
+			if(!GlobalGameData.heroTakingDamage ){
+				if(!GlobalGameData.heroAttacking){
+					if (collision.isTouching(Sides.BOTTOM) && collision.velocityX == 0) {
+						display.timeline.playAnimation("idle");
+					} else if (collision.isTouching(Sides.BOTTOM) && collision.velocityX != 0) {
+						display.timeline.playAnimation("run");
+					} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY > 0) {
+						display.timeline.playAnimation("fall");
+					} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY < 0) {
+						display.timeline.playAnimation("jump");
+					}
+				}else{
+					display.timeline.playAnimation("attack", false);
+				}			 
 			}else{
-				display.timeline.playAnimation("attack", false);
-			}			 
+				display.timeline.playAnimation("die");	
+			}  
 		}else{
-			display.timeline.playAnimation("die");	
-		}        
+			if(!GlobalGameData.heroTakingDamage ){
+				if(!GlobalGameData.heroAttacking){
+					if (collision.isTouching(Sides.BOTTOM) && collision.velocityX == 0) {
+						display.timeline.playAnimation("ring_idle");
+					} else if (collision.isTouching(Sides.BOTTOM) && collision.velocityX != 0) {
+						display.timeline.playAnimation("ring_run");
+					} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY > 0) {
+						display.timeline.playAnimation("ring_fall");
+					} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY < 0) {
+						display.timeline.playAnimation("ring_jump");
+					}
+				}else{
+					display.timeline.playAnimation("ring_attack", false);
+				}			 
+			}else{
+				display.timeline.playAnimation("die");	
+			}  
+		}		      
 		display.x = collision.x;
 		display.y = collision.y;		
 	}
