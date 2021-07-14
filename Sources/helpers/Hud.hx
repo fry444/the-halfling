@@ -1,5 +1,7 @@
 package helpers;
 
+import haxe.Timer;
+import com.gEngine.helper.Screen;
 import states.GameState;
 import com.gEngine.display.Sprite;
 import states.GlobalGameData;
@@ -8,11 +10,15 @@ import com.gEngine.display.Stage;
 import com.gEngine.display.StaticLayer;
 
 class Hud {
+    var screenWidth=Screen.getWidth();
+    var screenHeight=Screen.getHeight();
     var hudLayer:StaticLayer;
     var healthValue:Text; 
     var controlsText:Text; 
+    var messageText:Text; 
     var stage: Stage;
     var gameState: GameState;
+    
 
     public function new(stage: Stage, gameState: GameState) {
         this.stage = stage;
@@ -29,10 +35,11 @@ class Hud {
         healthValue.y=50;
         healthValue.text=""+GlobalGameData.heroHealth;
 		hudLayer.addChild(healthValue);  
+        
         showControls();
     }
 
-    public function update(){
+    public function update(message: String){
 		healthValue.text=""+GlobalGameData.heroHealth;
 		if(GlobalGameData.heroWithSword){
 			var sword = new Sprite("sword");
@@ -48,10 +55,17 @@ class Hud {
         	ring.smooth = false;
         	hudLayer.addChild(ring);
 		}
+        if(message!=""){
+            showMessage(message);
+        } else{
+            if(messageText!=null){
+                messageText.text = "";
+            }            
+        } 
 		hudLayer.update(1);
 		if(GlobalGameData.heroHealth<=0){
 			gameState.gameOver();
-		}
+		}              
 	}
 
     public function showControls(){
@@ -65,7 +79,19 @@ class Hud {
         controlsText.scaleX = 0.5;
         controlsText.scaleY = 0.5;
 		hudLayer.addChild(controlsText);  
+    }    
+
+    function showMessage(message: String){
+        messageText = new Text("Kenney_Thick");
+        messageText.text=message;
+        messageText.x=(screenWidth*0.5)-(messageText.width()*0.5);
+        messageText.y=screenHeight*0.5;        
+        hudLayer.addChild(messageText); 
+        stopShowingMessage();
     }
 
+    function stopShowingMessage(){
+        Timer.delay(update.bind(""),5000);
+    }    
 
 }

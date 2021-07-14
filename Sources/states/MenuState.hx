@@ -61,7 +61,7 @@ class MenuState extends State{
             gameOverText.text="GAME OVER";
             gameOverText.scaleX = 1.5;
             gameOverText.scaleY = 1.5;
-            gameOverText.x=(screenWidth/2)-(gameOverText.width()*0.75);
+            gameOverText.x=(screenWidth*0.5)-(gameOverText.width()*0.75);
             gameOverText.y=630;
             gameOverText.set_color(Color.Black);
             menuLayer.addChild(gameOverText);  

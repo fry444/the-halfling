@@ -103,15 +103,15 @@ class GameState extends State {
 
 	override function init() {
 		simulationLayer = new Layer();
-		stage.addChild(simulationLayer);
-		hud = new Hud(stage, this);	
+		stage.addChild(simulationLayer);		
 		worldMap = new Tilemap("pantalla"+actualRoom+"_tmx", "tiles"+actualRoom);
 		worldMap.init(function(layerTilemap, tileLayer) {
 			if (!tileLayer.properties.exists("noCollision")) {
 				layerTilemap.createCollisions(tileLayer);
 			}
 			simulationLayer.addChild(layerTilemap.createDisplay(tileLayer));
-		}, parseMapObjects);		
+		}, parseMapObjects);	
+		hud = new Hud(stage, this);		
 		GlobalGameData.simulationLayer = simulationLayer;
 		GlobalGameData.attacksCollisionGroup = new CollisionGroup();
 		stage.defaultCamera().limits(0, 0, worldMap.widthIntTiles * 32 * 1, worldMap.heightInTiles * 32 * 1);
@@ -244,7 +244,7 @@ class GameState extends State {
 			if(!GlobalGameData.heroWithRing){
 				if(!GlobalGameData.heroTakingDamage){
 					hero.damage();
-					hud.update();
+					hud.update("");
 				}			
 			}
 		}	
@@ -255,7 +255,7 @@ class GameState extends State {
 		if(!GlobalGameData.heroWithRing){
 			if(!GlobalGameData.heroTakingDamage){
 				hero.damage();
-				hud.update();
+				hud.update("");
 			}			
 		}
 	}
@@ -267,8 +267,12 @@ class GameState extends State {
 
 	function heroVsPowerUp(powerUpCollision: ICollider, heroCollision:ICollider){
 		var powerUp:PowerUp = cast powerUpCollision.userData;
-		powerUp.take();
-		hud.update();
+		var power = powerUp.take();
+		var message = "";
+		if(power=="one_ring"){
+			message = "ENEMIES CANT HURT YOU NOW";
+		}
+		hud.update(message);
 	}
 
 	#if DEBUGDRAW

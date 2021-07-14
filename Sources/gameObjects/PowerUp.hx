@@ -41,7 +41,7 @@ class PowerUp extends Entity{
 		super.update(dt);		
 	}    
 
-    public function take():Void{
+    public function take():String{
         SoundManager.playFx("power_up_sound",false);
         if(name=="sword"){
             GlobalGameData.heroWithSword=true;
@@ -51,5 +51,6 @@ class PowerUp extends Entity{
         }
         collision.removeFromParent();    
         display.removeFromParent();    
+        return name;
     }
 }
