@@ -1,5 +1,6 @@
 package states;
 
+import js.html.Console;
 import com.gEngine.display.Sprite;
 import com.loading.basicResources.FontLoader;
 import com.gEngine.display.Text;
@@ -45,17 +46,15 @@ class GameState extends State {
 	var powerUpsCollision:CollisionGroup = new CollisionGroup();
 	var healthValue:Text; 
 
-	public function new(room:String = "3", fromRoom:String = null) {
+	public function new(room:String, fromRoom:String = null) {
 		super();		
 		this.actualRoom = room;
 	}
 
 	override function load(resources:Resources) {
-		//Musica
-		resources.add(new SoundLoader("pantalla1", false));
-		resources.add(new SoundLoader("pantalla2", false));
-		resources.add(new SoundLoader("pantalla3", false));
-		//SoundFX
+		var atlas = new JoinAtlas(2048, 2048);
+		atlas.add(new FontLoader("Kenney_Thick",18));
+		resources.add(new SoundLoader("pantalla"+actualRoom, false));
 		resources.add(new SoundLoader("arrow_sound"));
 		resources.add(new SoundLoader("bat_near_sound"));
 		resources.add(new SoundLoader("bat_death_sound"));
@@ -66,9 +65,7 @@ class GameState extends State {
 		resources.add(new SoundLoader("wolf_near_sound"));
 		resources.add(new SoundLoader("wolf_death_sound"));
 		resources.add(new SoundLoader("power_up_sound"));
-
-		resources.add(new DataLoader("pantalla"+actualRoom+"_tmx"));
-		var atlas = new JoinAtlas(2048, 2048);
+		resources.add(new DataLoader("pantalla"+actualRoom+"_tmx"));		
 		atlas.add(new TilesheetLoader("tiles"+actualRoom, 32, 32, 0));
 		atlas.add(new SpriteSheetLoader("halfling", 50, 37, 0, [
 			new Sequence("die", [64, 65, 66, 67, 68]),
@@ -97,8 +94,7 @@ class GameState extends State {
 			new Sequence("idle", [0, 1, 2, 3, 4, 5, 8, 9]),
 			new Sequence("attack", [13, 14, 15]),
 			new Sequence("die", [20, 21, 22, 23, 24, 25, 26, 27, 28, 29])
-		]));
-		atlas.add(new FontLoader("Kenney_Thick",18));
+		]));		
 		resources.add(new ImageLoader("sword"));
 		resources.add(new ImageLoader("one_ring"));
 		resources.add(new ImageLoader("arrow"));
@@ -109,14 +105,13 @@ class GameState extends State {
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);
 		hudLayer=new StaticLayer();		
-
 		worldMap = new Tilemap("pantalla"+actualRoom+"_tmx", "tiles"+actualRoom);
 		worldMap.init(function(layerTilemap, tileLayer) {
 			if (!tileLayer.properties.exists("noCollision")) {
 				layerTilemap.createCollisions(tileLayer);
 			}
 			simulationLayer.addChild(layerTilemap.createDisplay(tileLayer));
-		}, parseMapObjects);
+		}, parseMapObjects);			
 		stage.addChild(hudLayer);
 		GlobalGameData.simulationLayer = simulationLayer;
 		GlobalGameData.attacksCollisionGroup = new CollisionGroup();
@@ -156,6 +151,9 @@ class GameState extends State {
         	hudLayer.addChild(ring);
 		}
 		hudLayer.update(1);
+		if(GlobalGameData.heroHealth<=0){
+			gameOver();
+		}
 	}
 
 	function createTouchJoystick() {
@@ -243,27 +241,32 @@ class GameState extends State {
 		CollisionEngine.collide(halfling.collision,limits);
 
 		if(CollisionEngine.overlap(halfling.collision, winZone)){
-			changeState(new GameState(getNextRoom(),actualRoom));
+			goToNextRoom();			
 		}
 
 		CollisionEngine.overlap(halfling.collision, enemiesCollision, heroVsEnemy);
 		CollisionEngine.overlap(halfling.collision, arrowsCollision, heroVsArrow);
 		CollisionEngine.overlap(halfling.collision, powerUpsCollision, heroVsPowerUp);
 		CollisionEngine.overlap(GlobalGameData.attacksCollisionGroup, enemiesCollision, attackVsEnemy);
+
+		if(halfling.collision.y > 750){
+			gameOver();
+		}
 	}
 
-	inline function getNextRoom(){
-		if(actualRoom=="menu"){
-			return "1";
-		}else 
+	function gameOver(){
+		changeState(new MenuState(true));
+	}
+
+	function goToNextRoom(){
 		if(actualRoom=="1"){
-			return "2";
+			changeState(new GameState("2",actualRoom));
 		}else
 		if(actualRoom=="2"){
-			return "3";
+			changeState(new GameState("3",actualRoom));
 		}else
 		{
-			return "menu";
+			changeState(new MenuState(false));
 		}
 	}
 
