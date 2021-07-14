@@ -45,9 +45,9 @@ class WalkingEnemy extends Enemy{
             display.offsetY = -32;
         }
 
+        collision.userData = this;
         collisionGroup.add(collision);
-		collision.userData = this;
-
+		
         dir=new FastVector2(0,1);
 
         pathWalker = new PathWalker(path,5,PlayMode.Loop);

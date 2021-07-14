@@ -1,5 +1,6 @@
 package states;
 
+import js.html.Console;
 import helpers.Hud;
 import com.loading.basicResources.FontLoader;
 import com.soundLib.SoundManager;
@@ -40,7 +41,6 @@ class GameState extends State {
 	var enemiesCollision:CollisionGroup;
 	var arrowsCollision:CollisionGroup;
 	var powerUpsCollision:CollisionGroup;
-	public var heroAttackCollisionGroup:CollisionGroup;
 	var hud: Hud;
 
 	public function new(room:String, fromRoom:String = null) {
@@ -108,7 +108,6 @@ class GameState extends State {
 		enemiesCollision = new CollisionGroup();
 	 	arrowsCollision = new CollisionGroup();
 	 	powerUpsCollision = new CollisionGroup();
-		heroAttackCollisionGroup = new CollisionGroup();
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);		
 		worldMap = new Tilemap("pantalla"+actualRoom+"_tmx", "tiles"+actualRoom);
@@ -146,7 +145,7 @@ class GameState extends State {
 			if(halfling!=null){
 				halfling.die();
 			}
-			halfling = new Halfling(object.x, object.y, simulationLayer, heroAttackCollisionGroup, this);
+			halfling = new Halfling(object.x, object.y, simulationLayer, this, enemiesCollision);
 			addChild(halfling);			
 		}else 
 		if(compareName(object, "winZone")){
@@ -214,7 +213,7 @@ class GameState extends State {
 		CollisionEngine.overlap(halfling.collision, enemiesCollision, heroVsEnemy);
 		CollisionEngine.overlap(halfling.collision, arrowsCollision, heroVsArrow);
 		CollisionEngine.overlap(halfling.collision, powerUpsCollision, heroVsPowerUp);
-		CollisionEngine.overlap(heroAttackCollisionGroup, enemiesCollision, attackVsEnemy);
+		//CollisionEngine.overlap(heroAttackCollisionGroup, enemiesCollision, attackVsEnemy);
 
 		if(CollisionEngine.overlap(halfling.collision, winZone)){
 			goToNextRoom();			
@@ -267,10 +266,10 @@ class GameState extends State {
 		}
 	}
 
-	function attackVsEnemy(attackCollision: ICollider, enemyCollision:ICollider){
+	/*function attackVsEnemy(attackCollision: ICollider, enemyCollision:ICollider){
 		var enemy:Enemy = cast enemyCollision.userData;
 		enemy.damage();		
-	}
+	}*/
 
 	function heroVsPowerUp(powerUpCollision: ICollider, heroCollision:ICollider){
 		var powerUp:PowerUp = cast powerUpCollision.userData;

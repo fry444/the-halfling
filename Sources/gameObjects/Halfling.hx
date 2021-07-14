@@ -1,5 +1,7 @@
 package gameObjects;
 
+import com.collision.platformer.ICollider;
+import com.collision.platformer.CollisionEngine;
 import states.GameState;
 import com.collision.platformer.CollisionGroup;
 import com.soundLib.SoundManager;
@@ -20,10 +22,14 @@ class Halfling extends Entity{
 	public var rightDirection:Bool = true;
     var maxSpeed = 200;
 	var gameState: GameState;
+	var attackCollisionGroup: CollisionGroup;
+	var enemyCollisionGroup: CollisionGroup;
 
-    public function new(x:Float,y:Float,layer:Layer,heroAttackCollisionGroup, gameState:GameState) {
+    public function new(x:Float,y:Float,layer:Layer, gameState:GameState, enemyCollisionGroup) {
 		super();
 		this.gameState = gameState;
+		this.enemyCollisionGroup = enemyCollisionGroup;
+		attackCollisionGroup = new CollisionGroup();
         display = new Sprite("halfling");
 		display.smooth = false;
         layer.addChild(display);
@@ -49,6 +55,11 @@ class Halfling extends Entity{
 		super.update(dt);
 		
 		collision.update(dt);
+		
+		if(CollisionEngine.overlap(attackCollisionGroup, enemyCollisionGroup)){
+			Console.log("attackVsEnemy");
+		}
+
 	}
 
     override function render() {
@@ -90,7 +101,7 @@ class Halfling extends Entity{
 			}else{
 				display.timeline.playAnimation("die");	
 			}  
-		}		      
+		}		
 		display.x = collision.x;
 		display.y = collision.y;		
 	}
@@ -141,16 +152,17 @@ class Halfling extends Entity{
 			if(!GlobalGameData.heroAttacking){
 				GlobalGameData.heroAttacking = true;	   
 				SoundManager.playFx("sword_sound");
+				var collisionWidth = collision.width;
 				attackCollision = new CollisionBox();
 				if(!rightDirection){
-					attackCollision.x = collision.x-collision.width;
+					attackCollision.x = collision.x-collisionWidth;
 				}else{
 					attackCollision.x =collision.x;
 				}		
 				attackCollision.y = collision.y;	
-				attackCollision.width = collision.width*2;
+				attackCollision.width = collisionWidth*2;
 				attackCollision.height = collision.height;
-				gameState.heroAttackCollisionGroup.add(attackCollision);
+				attackCollisionGroup.add(attackCollision);
 				Timer.delay(stopAttack, 300);
 			}
 		}
@@ -160,6 +172,11 @@ class Halfling extends Entity{
 	function stopAttack() {
 		GlobalGameData.heroAttacking = false;
 		attackCollision.removeFromParent();
+	}
+
+	function attackVsEnemy(attackCollision: ICollider, enemyCollision:ICollider){
+		var enemy:Enemy = cast enemyCollision.userData;
+		enemy.damage();		
 	}
 
 	public function damage():Void{
