@@ -1,8 +1,5 @@
 package gameObjects;
 
-import com.soundLib.SoundManager;
-import haxe.Timer;
-import js.html.Console;
 import com.collision.platformer.CollisionBox;
 import com.gEngine.display.Sprite;
 import paths.Complex;

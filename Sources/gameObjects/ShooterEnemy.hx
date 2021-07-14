@@ -1,8 +1,6 @@
 package gameObjects;
 
 import com.soundLib.SoundManager;
-import js.html.Console;
-import haxe.Timer;
 import com.collision.platformer.CollisionGroup;
 import com.gEngine.display.Layer;
 import kha.math.FastVector2;

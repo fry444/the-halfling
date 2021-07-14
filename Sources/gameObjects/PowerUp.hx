@@ -3,7 +3,6 @@ package gameObjects;
 import com.soundLib.SoundManager;
 import states.GlobalGameData;
 import com.gEngine.display.Stage;
-import js.html.Console;
 import com.collision.platformer.CollisionGroup;
 import com.collision.platformer.CollisionBox;
 import com.gEngine.display.Sprite;

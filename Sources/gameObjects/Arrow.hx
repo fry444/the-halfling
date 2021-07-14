@@ -2,11 +2,9 @@ package gameObjects;
 
 import com.gEngine.helper.RectangleDisplay;
 import com.gEngine.display.Layer;
-import com.gEngine.display.Stage;
 import com.collision.platformer.CollisionGroup;
 import kha.math.FastVector2;
 import com.collision.platformer.CollisionBox;
-import com.gEngine.display.Sprite;
 import com.framework.utils.Entity;
 
 class Arrow extends Entity{

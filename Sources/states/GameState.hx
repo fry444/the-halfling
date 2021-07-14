@@ -1,5 +1,6 @@
 package states;
 
+import haxe.Timer;
 import helpers.Loader;
 import helpers.Hud;
 import com.soundLib.SoundManager;
@@ -64,6 +65,8 @@ class GameState extends State {
 		GlobalGameData.heroWithRing = false;	
 		stage.defaultCamera().limits(0, 0, worldMap.widthIntTiles * 32 * 1, worldMap.heightInTiles * 32 * 1);
 		SoundManager.playMusic("pantalla"+actualRoom,true);
+		hud.update("         IF YOU DONT HAVE A SWORD\n\n\n\nJUMP ON THE ENEMIES TO KILL THEM");
+		Timer.delay(hud.update.bind(""),4000);
 		createTouchJoystick();	
 	}	
 
@@ -205,13 +208,13 @@ class GameState extends State {
 			}			
 		}
 	}
-	
+
 	function heroVsPowerUp(powerUpCollision: ICollider, heroCollision:ICollider){
 		var powerUp:PowerUp = cast powerUpCollision.userData;
 		var power = powerUp.take();
 		var message = "";
 		if(power=="one_ring"){
-			message = "ENEMIES CANT HURT YOU NOW";
+			message = "    YOU FOUND THE ONE RING\n\n\n\nENEMIES CANT HURT YOU NOW";
 		}
 		hud.update(message);
 	}

@@ -8,7 +8,6 @@ import com.gEngine.display.Sprite;
 import com.collision.platformer.CollisionGroup;
 import com.gEngine.display.Layer;
 import com.framework.utils.Entity;
-import js.html.Console;
 
 class Enemy extends Entity{
     private var width:Float;

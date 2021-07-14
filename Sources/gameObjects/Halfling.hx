@@ -24,15 +24,17 @@ class Halfling extends Entity{
 	var gameState: GameState;
 	var attackCollisionGroup: CollisionGroup;
 	var enemyCollisionGroup: CollisionGroup;
+	var layer: Layer;
 
     public function new(x:Float,y:Float,layer:Layer, gameState:GameState, enemyCollisionGroup) {
 		super();
 		this.gameState = gameState;
 		this.enemyCollisionGroup = enemyCollisionGroup;
-		attackCollisionGroup = new CollisionGroup();
+		this.attackCollisionGroup = new CollisionGroup();
         display = new Sprite("halfling");
 		display.smooth = false;
-        layer.addChild(display);
+		this.layer = layer;
+        this.layer.addChild(display);
 		collision = new CollisionBox();
 		
 		collision.width = display.width();

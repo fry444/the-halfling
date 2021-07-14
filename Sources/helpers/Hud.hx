@@ -43,15 +43,19 @@ class Hud {
 		healthValue.text=""+GlobalGameData.heroHealth;
 		if(GlobalGameData.heroWithSword){
 			var sword = new Sprite("sword");
-        	sword.x = 1200;
-        	sword.y = 40;
+            sword.scaleX = 0.5;
+            sword.scaleY = 0.5;
+        	sword.x = 40;
+        	sword.y = 100;
         	sword.smooth = false;
         	hudLayer.addChild(sword);
 		}
 		if(GlobalGameData.heroWithRing){
 			var ring = new Sprite("one_ring");
-        	ring.x = 1130;
-        	ring.y = 50;
+            ring.scaleX = 0.5;
+            ring.scaleY = 0.5;
+        	ring.x = 90;
+        	ring.y = 110;
         	ring.smooth = false;
         	hudLayer.addChild(ring);
 		}
