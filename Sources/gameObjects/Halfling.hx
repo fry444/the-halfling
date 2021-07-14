@@ -56,9 +56,7 @@ class Halfling extends Entity{
 		
 		collision.update(dt);
 		
-		if(CollisionEngine.overlap(attackCollisionGroup, enemyCollisionGroup)){
-			Console.log("attackVsEnemy");
-		}
+		CollisionEngine.overlap(attackCollisionGroup, enemyCollisionGroup, attackVsEnemy);
 
 	}
 

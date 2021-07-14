@@ -29,11 +29,9 @@ class WalkingEnemy extends Enemy{
         display.smooth = false;
         layer.addChild(display);
         
-        collision.width = display.width()*scale;
-        
+        collision.width = display.width()*scale;        
         collision.height = display.height()*scale;
-		display.pivotX=display.width()*0.5;
-		
+		display.pivotX=display.width()*0.5;		
 		display.scaleX = display.scaleY = scale;
 
 		collision.x=x;
@@ -49,7 +47,6 @@ class WalkingEnemy extends Enemy{
         collisionGroup.add(collision);
 		
         dir=new FastVector2(0,1);
-
         pathWalker = new PathWalker(path,5,PlayMode.Loop);
     }
 
