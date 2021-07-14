@@ -1,5 +1,7 @@
 package gameObjects;
 
+import states.GameState;
+import com.collision.platformer.CollisionGroup;
 import com.soundLib.SoundManager;
 import js.html.Console;
 import haxe.Timer;
@@ -17,9 +19,11 @@ class Halfling extends Entity{
 	public var attackCollision:CollisionBox;
 	public var rightDirection:Bool = true;
     var maxSpeed = 200;
+	var gameState: GameState;
 
-    public function new(x:Float,y:Float,layer:Layer) {
+    public function new(x:Float,y:Float,layer:Layer,heroAttackCollisionGroup, gameState:GameState) {
 		super();
+		this.gameState = gameState;
         display = new Sprite("halfling");
 		display.smooth = false;
         layer.addChild(display);
@@ -61,6 +65,8 @@ class Halfling extends Entity{
 				} else if (!collision.isTouching(Sides.BOTTOM) && collision.velocityY < 0) {
 					display.timeline.playAnimation("jump");
 				}
+			}else{
+				display.timeline.playAnimation("attack", false);
 			}			 
 		}else{
 			display.timeline.playAnimation("die");	
@@ -113,8 +119,7 @@ class Halfling extends Entity{
 	public function attack():Void{
 		if(GlobalGameData.heroWithSword){
 			if(!GlobalGameData.heroAttacking){
-				GlobalGameData.heroAttacking = true;
-				display.timeline.playAnimation("attack", false);   
+				GlobalGameData.heroAttacking = true;	   
 				SoundManager.playFx("sword_sound");
 				attackCollision = new CollisionBox();
 				if(!rightDirection){
@@ -125,7 +130,7 @@ class Halfling extends Entity{
 				attackCollision.y = collision.y;	
 				attackCollision.width = collision.width*2;
 				attackCollision.height = collision.height;
-				GlobalGameData.attacksCollisionGroup.add(attackCollision);
+				gameState.heroAttackCollisionGroup.add(attackCollision);
 				Timer.delay(stopAttack, 300);
 			}
 		}

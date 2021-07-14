@@ -1,11 +1,7 @@
 package states;
 
 import helpers.Hud;
-import js.html.Console;
-import com.gEngine.display.Sprite;
 import com.loading.basicResources.FontLoader;
-import com.gEngine.display.Text;
-import com.gEngine.display.StaticLayer;
 import com.soundLib.SoundManager;
 import com.loading.basicResources.SoundLoader;
 import gameObjects.ShooterEnemy;
@@ -41,9 +37,10 @@ class GameState extends State {
 	var actualRoom:String; 
 	var winZone:CollisionBox;
 	var limits:CollisionGroup = new CollisionGroup();
-	var enemiesCollision:CollisionGroup = new CollisionGroup();
-	var arrowsCollision:CollisionGroup = new CollisionGroup();
-	var powerUpsCollision:CollisionGroup = new CollisionGroup();
+	var enemiesCollision:CollisionGroup;
+	var arrowsCollision:CollisionGroup;
+	var powerUpsCollision:CollisionGroup;
+	public var heroAttackCollisionGroup:CollisionGroup;
 	var hud: Hud;
 
 	public function new(room:String, fromRoom:String = null) {
@@ -103,6 +100,10 @@ class GameState extends State {
 	}
 
 	override function init() {
+		enemiesCollision = new CollisionGroup();
+	 	arrowsCollision = new CollisionGroup();
+	 	powerUpsCollision = new CollisionGroup();
+		heroAttackCollisionGroup = new CollisionGroup();
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);		
 		worldMap = new Tilemap("pantalla"+actualRoom+"_tmx", "tiles"+actualRoom);
@@ -113,8 +114,9 @@ class GameState extends State {
 			simulationLayer.addChild(layerTilemap.createDisplay(tileLayer));
 		}, parseMapObjects);	
 		hud = new Hud(stage, this);		
-		GlobalGameData.simulationLayer = simulationLayer;
-		GlobalGameData.attacksCollisionGroup = new CollisionGroup();
+		GlobalGameData.simulationLayer = simulationLayer;	
+		GlobalGameData.heroWithSword = false;
+		GlobalGameData.heroWithRing = false;	
 		stage.defaultCamera().limits(0, 0, worldMap.widthIntTiles * 32 * 1, worldMap.heightInTiles * 32 * 1);
 		SoundManager.playMusic("pantalla"+actualRoom,true);
 		createTouchJoystick();	
@@ -136,10 +138,11 @@ class GameState extends State {
 
 	function parseMapObjects(layerTilemap:Tilemap, object:TmxObject) {
 		if(compareName(object, "startZone")){
-			if(halfling==null){
-				halfling = new Halfling(object.x, object.y, simulationLayer);
-				addChild(halfling);
+			if(halfling!=null){
+				halfling.die();
 			}
+			halfling = new Halfling(object.x, object.y, simulationLayer, heroAttackCollisionGroup, this);
+			addChild(halfling);			
 		}else 
 		if(compareName(object, "winZone")){
 			winZone = new CollisionBox();
@@ -203,16 +206,14 @@ class GameState extends State {
 
 		CollisionEngine.collide(halfling.collision,worldMap.collision);
 		CollisionEngine.collide(halfling.collision,limits);
+		CollisionEngine.overlap(halfling.collision, enemiesCollision, heroVsEnemy);
+		CollisionEngine.overlap(halfling.collision, arrowsCollision, heroVsArrow);
+		CollisionEngine.overlap(halfling.collision, powerUpsCollision, heroVsPowerUp);
+		CollisionEngine.overlap(heroAttackCollisionGroup, enemiesCollision, attackVsEnemy);
 
 		if(CollisionEngine.overlap(halfling.collision, winZone)){
 			goToNextRoom();			
 		}
-
-		CollisionEngine.overlap(halfling.collision, enemiesCollision, heroVsEnemy);
-		CollisionEngine.overlap(halfling.collision, arrowsCollision, heroVsArrow);
-		CollisionEngine.overlap(halfling.collision, powerUpsCollision, heroVsPowerUp);
-		CollisionEngine.overlap(GlobalGameData.attacksCollisionGroup, enemiesCollision, attackVsEnemy);
-
 		if(halfling.collision.y > 750){
 			gameOver();
 		}

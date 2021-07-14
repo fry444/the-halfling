@@ -9,9 +9,7 @@ class GlobalGameData {
     static public var heroWithSword: Bool = false;    
     static public var heroWithRing: Bool = false;  
     static public var heroAttacking: Bool = false;    
-    static public var heroHealth: Int = 10;
-    static public var attacksCollisionGroup: CollisionGroup;
-    
+    static public var heroHealth: Int = 10;    
 
     static public function destroy(){
         simulationLayer=null;        
