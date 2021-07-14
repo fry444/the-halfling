@@ -136,6 +136,7 @@ class Halfling extends Entity{
 	}
 
 	public function damage():Void{
+		SoundManager.playFx("halfling_damage_sound",false);
         GlobalGameData.heroTakingDamage = true;
 		GlobalGameData.heroHealth--;
 		Timer.delay(stopDamage, 500);

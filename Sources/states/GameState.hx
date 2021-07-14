@@ -65,6 +65,7 @@ class GameState extends State {
 		resources.add(new SoundLoader("wolf_near_sound"));
 		resources.add(new SoundLoader("wolf_death_sound"));
 		resources.add(new SoundLoader("power_up_sound"));
+		resources.add(new SoundLoader("halfling_damage_sound"));
 		resources.add(new DataLoader("pantalla"+actualRoom+"_tmx"));		
 		atlas.add(new TilesheetLoader("tiles"+actualRoom, 32, 32, 0));
 		atlas.add(new SpriteSheetLoader("halfling", 50, 37, 0, [
