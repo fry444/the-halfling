@@ -1,6 +1,6 @@
 # THE HALFLING
 
-Prototipo de videojuego desarrollado con el framework **khawy** (basado en Kha) por **Federico Rodriguez (151563)**, para la materia **Programación de Videojuegos** de la Universidad ORT.
+Prototipo de videojuego desarrollado con el framework **khawy** (basado en Haxe) por **Federico Rodriguez (151563)**, para la materia **Programación de Videojuegos** de la Universidad ORT.
 
 El juego está ligeramente basado en la historia **"El Hobbit"**, y tiene como personaje a un mediano (halfling), que recorre 3 escenarios de bosques y cuevas, enfrentandose a diferentes enemigos, que puede matar saltando sobre ellos o atacandolos con la espada.
 
