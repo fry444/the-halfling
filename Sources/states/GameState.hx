@@ -1,5 +1,6 @@
 package states;
 
+import helpers.Hud;
 import js.html.Console;
 import com.gEngine.display.Sprite;
 import com.loading.basicResources.FontLoader;
@@ -33,7 +34,6 @@ import com.loading.Resources;
 import com.framework.utils.State;
 
 class GameState extends State {
-	var hudLayer:StaticLayer;
 	var worldMap:Tilemap;
 	var halfling:Halfling;
 	var simulationLayer:Layer;
@@ -44,7 +44,7 @@ class GameState extends State {
 	var enemiesCollision:CollisionGroup = new CollisionGroup();
 	var arrowsCollision:CollisionGroup = new CollisionGroup();
 	var powerUpsCollision:CollisionGroup = new CollisionGroup();
-	var healthValue:Text; 
+	var hud: Hud;
 
 	public function new(room:String, fromRoom:String = null) {
 		super();		
@@ -104,57 +104,20 @@ class GameState extends State {
 	override function init() {
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);
-		hudLayer=new StaticLayer();		
+		hud = new Hud(stage, this);	
 		worldMap = new Tilemap("pantalla"+actualRoom+"_tmx", "tiles"+actualRoom);
 		worldMap.init(function(layerTilemap, tileLayer) {
 			if (!tileLayer.properties.exists("noCollision")) {
 				layerTilemap.createCollisions(tileLayer);
 			}
 			simulationLayer.addChild(layerTilemap.createDisplay(tileLayer));
-		}, parseMapObjects);			
-		stage.addChild(hudLayer);
+		}, parseMapObjects);		
 		GlobalGameData.simulationLayer = simulationLayer;
 		GlobalGameData.attacksCollisionGroup = new CollisionGroup();
 		stage.defaultCamera().limits(0, 0, worldMap.widthIntTiles * 32 * 1, worldMap.heightInTiles * 32 * 1);
 		SoundManager.playMusic("pantalla"+actualRoom,true);
 		createTouchJoystick();	
-		createHud();	
-	}
-
-	function createHud(){
-		var healthText = new Text("Kenney_Thick");
-        healthText.x=50;
-        healthText.y=50;
-        healthText.text="HEALTH";
-        hudLayer.addChild(healthText);  
-		healthValue = new Text("Kenney_Thick");
-        healthValue.x=180;
-        healthValue.y=50;
-        healthValue.text=""+GlobalGameData.heroHealth;
-		hudLayer.addChild(healthValue);  
-	}
-
-	function updateHud(){
-		healthValue.text=""+GlobalGameData.heroHealth;
-		if(GlobalGameData.heroWithSword){
-			var sword = new Sprite("sword");
-        	sword.x = 1200;
-        	sword.y = 40;
-        	sword.smooth = false;
-        	hudLayer.addChild(sword);
-		}
-		if(GlobalGameData.heroWithRing){
-			var ring = new Sprite("one_ring");
-        	ring.x = 1130;
-        	ring.y = 50;
-        	ring.smooth = false;
-        	hudLayer.addChild(ring);
-		}
-		hudLayer.update(1);
-		if(GlobalGameData.heroHealth<=0){
-			gameOver();
-		}
-	}
+	}	
 
 	function createTouchJoystick() {
 		touchJoystick = new VirtualGamepad();
@@ -204,7 +167,7 @@ class GameState extends State {
 			var goblinCount = 5;
 			for(p in 0 ... goblinCount){
 				var xPosition:Float = (object.x-40)+(object.width/goblinCount)*p;
-				var goblin = new WalkingEnemy(xPosition, object.y-55, 80, 64 ,2, "goblin", simulationLayer, enemiesCollision, halfling.collision);
+				var goblin = new WalkingEnemy(xPosition, object.y-52, 80, 64 ,2, "goblin", simulationLayer, enemiesCollision, halfling.collision);
 				addChild(goblin);			
 			}			
 		}else 
@@ -254,7 +217,7 @@ class GameState extends State {
 		}
 	}
 
-	function gameOver(){
+	public function gameOver(){
 		changeState(new MenuState(true));
 	}
 
@@ -281,7 +244,7 @@ class GameState extends State {
 			if(!GlobalGameData.heroWithRing){
 				if(!GlobalGameData.heroTakingDamage){
 					hero.damage();
-					updateHud();
+					hud.update();
 				}			
 			}
 		}	
@@ -292,7 +255,7 @@ class GameState extends State {
 		if(!GlobalGameData.heroWithRing){
 			if(!GlobalGameData.heroTakingDamage){
 				hero.damage();
-				updateHud();
+				hud.update();
 			}			
 		}
 	}
@@ -305,7 +268,7 @@ class GameState extends State {
 	function heroVsPowerUp(powerUpCollision: ICollider, heroCollision:ICollider){
 		var powerUp:PowerUp = cast powerUpCollision.userData;
 		powerUp.take();
-		updateHud();
+		hud.update();
 	}
 
 	#if DEBUGDRAW

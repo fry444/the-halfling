@@ -153,7 +153,7 @@
  <objectgroup id="9" name="objetos">
   <object id="3" name="startZone" x="36" y="641.333" width="60" height="58.6667"/>
   <object id="4" name="winZone" x="1606.67" y="68" width="52" height="60.0004"/>
-  <object id="9" name="multipleGoblinZone" x="1116" y="52" width="417.333" height="72"/>
+  <object id="9" name="multipleGoblinZone" x="1116" y="54" width="417.333" height="72"/>
   <object id="10" name="goblinZone" x="584" y="86.6667" width="242.667" height="70.6667"/>
   <object id="14" name="goblinZone" x="693.333" y="632" width="242.667" height="70.6667"/>
   <object id="16" name="powerRing" x="414.667" y="638.666" width="78.6667" height="41.3333"/>
